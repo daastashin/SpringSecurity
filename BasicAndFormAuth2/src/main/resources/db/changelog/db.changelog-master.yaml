@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: Migration-0
+      author: Danil
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            - tableExists:
+                tableName: Person
+      changes:
+        - createTable:
+            tableName: Person
+            remarks: testing
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  autoIncrement: true
+              - column:
+                  name: username
+                  type: varchar(100)
+              - column:
+                  name: year
+                  type: integer
+              - column:
+                  name: password
+                  type: varchar(20)
