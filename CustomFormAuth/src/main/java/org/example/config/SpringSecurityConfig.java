@@ -24,19 +24,24 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.userDetailsService(personDetailsService)
-                .csrf(Customizer.withDefaults())//to disable csrf CORS(cross-site request fake)
-                .formLogin(form -> form
-                        .loginPage("/auth/login")
-                        .loginProcessingUrl("/process_login")
-                        .defaultSuccessUrl("/hello", true)
-                        .failureUrl("/auth/login?error")
-                        .permitAll())
-                .authorizeHttpRequests(authorize ->
-                        authorize
-                                .requestMatchers("/temp").permitAll()
-                                .anyRequest().authenticated()
-                );
+        http
+            .userDetailsService(personDetailsService)
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/logout", "/auth/login", "/hello", "/process_login"))//to disable csrf CORS(cross-site request fake)
+            .formLogin(form -> form
+                    .loginPage("/auth/login")
+                    .loginProcessingUrl("/process_login")
+                    .defaultSuccessUrl("/hello", true)
+                    .failureUrl("/auth/login?error")
+                    .permitAll())
+            .formLogin(Customizer.withDefaults())
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/auth/login")
+                .permitAll())
+            .authorizeHttpRequests(authorize ->
+                    authorize
+                            .requestMatchers("/temp", "/logout").permitAll()
+                            .anyRequest().authenticated());
 
         return http.build();
     }
